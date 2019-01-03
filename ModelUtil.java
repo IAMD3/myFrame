@@ -1,11 +1,11 @@
-package webapp.utils;
+package com.d3.simplegenerator.utils;
 
-
-import webapp.models.LoanProductModel;
-import webapp.utils.Ext.ChainedList;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Date: 2018/11/27
@@ -55,11 +55,6 @@ public class ModelUtil {
         return list;
     }
 
-    public static List<LoanProductModel> removeDuplicate(List<LoanProductModel> target){
-       LinkedHashSet<LoanProductModel> rst = new LinkedHashSet<>();
-
-        return  new ArrayList<LoanProductModel>(rst);
-    }
 
     //ChainedList -- powerfull structural list, optimised by Yukai
     public static <T> ChainedList<T> toChainList(List<T> list) {
@@ -70,7 +65,7 @@ public class ModelUtil {
 
     //*************************************************************************************************
 
-    public static Map<Integer, String> IntStringModelListToMap(List target, String keyName, String valueName) throws Exception {
+ /*   public static Map<Integer, String> IntStringModelListToMap(List target, String keyName, String valueName) throws Exception {
         return modelListToMap(target, keyName, valueName, (kField, vField, o) -> {
             Map<Integer, String> map = new HashMap<>();
             Integer key = kField.getInt(o);
@@ -90,9 +85,25 @@ public class ModelUtil {
             return map;
         });
     }
+*/
+
+    public static Map objListToMap(List target, String keyName, String valueName) throws NoSuchFieldException, IllegalAccessException {
+
+        HashMap map = new HashMap();
+
+        for (Object o : target) {
+            Class<?> clazz = o.getClass();
+            Field keyField = clazz.getDeclaredField(keyName);
+            Field valueField = clazz.getDeclaredField(valueName);
+            keyField.setAccessible(true);
+            valueField.setAccessible(true);
+            map.put(keyField.get(o), valueField.get(o));
+        }
+        return map;
+    }
 
 
-    public static <K, V> Map<K, V> modelListToMap(List target, String keyName, String valueName, FunXX<Map<K, V>, Field, Field, Object> typeFunx) throws Exception {
+   /* public static <K, V> Map<K, V> modelListToMap(List target, String keyName, String valueName, FunXX<Map<K, V>, Field, Field, Object> typeFunx) throws Exception {
 
         Map<K, V> map = new HashMap<>();
 
@@ -105,8 +116,7 @@ public class ModelUtil {
             map.putAll(typeFunx.run(keyField, valueField, o));
         }
         return map;
-    }
-
+    }*/
 
 
     @FunctionalInterface
